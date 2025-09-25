@@ -5,7 +5,7 @@ This project started as a way to practice my self-study in software development 
 
 ---
 
-## ✨ Features
+##  Features
 
 - **AI Quotes** – generates original motivational quotes using the OpenAI API  
 - **Famous Quotes** – randomly selects a curated quote from `famous_quotes.json` with attribution  
@@ -22,7 +22,7 @@ This project started as a way to practice my self-study in software development 
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Python** (FastAPI, Uvicorn)  
 - **OpenAI API** (AI quote generation)  
@@ -32,7 +32,7 @@ This project started as a way to practice my self-study in software development 
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 quotes-app/
 ├─ app.py # FastAPI server
@@ -47,7 +47,7 @@ quotes-app/
 
 
 
- Running Locally
+   Running Locally
 
 1. Clone the repo
 git clone https://github.com/<your-username>/<repo-name>.git
@@ -82,7 +82,10 @@ UI: http://127.0.0.1:8000/
 
 API: http://127.0.0.1:8000/quote/original
 
- Deployment
+
+   
+   Deployment
+   
 This app can be deployed to free hosting platforms (like Render):
 
     1-Push this repo to GitHub.

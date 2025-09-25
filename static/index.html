@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quotes Generator</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #0b1020; color: #eaf2ff; }
+    .wrap { max-width: 780px; margin: 40px auto; padding: 24px; }
+    .card { background: #121a33; border: 1px solid #26325b; border-radius: 14px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: .2px; }
+    p.sub { margin: 0 0 18px; opacity: .8; }
+    label { font-size: 14px; opacity: .9; }
+    select, input[type="text"] { width: 100%; padding: 10px 12px; margin-top: 6px; border-radius: 10px; border: 1px solid #26325b; background: #0f1630; color: #eaf2ff; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+    .btn { padding: 10px 14px; border-radius: 10px; border: 1px solid #3550a5; background: #1a2a5e; color: #eaf2ff; cursor: pointer; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn.secondary { background: #15224a; border-color: #2b3e80; }
+    .quote { white-space: pre-wrap; background: #0f1630; border: 1px dashed #3550a5; padding: 14px; border-radius: 10px; min-height: 80px; }
+    .muted { opacity: .8; font-size: 13px; }
+    #len.red { color: #ff6b6b; font-weight: bold; }
+    footer { margin-top: 18px; opacity: .7; font-size: 12px; }
+    .switch { display: inline-flex; gap: 6px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Quotes Generator</h1>
+      <p class="sub">Generate an original (AI) or famous quote, copy it, or save it.</p>
+
+      <div class="row">
+        <div style="flex:1">
+          <label for="themeSelect">Pick a theme</label>
+          <select id="themeSelect">
+            <option value="discipline and consistent action">Discipline</option>
+            <option value="resilience under pressure">Resilience</option>
+            <option value="creativity and flow">Creativity</option>
+            <option value="deep work and focus">Focus</option>
+            <option value="courage in uncertainty">Courage</option>
+            <option value="growth mindset">Growth</option>
+            <option value="">Custom (type below)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="flex:1">
+          <label for="themeInput">Custom theme (optional)</label>
+          <input id="themeInput" type="text" placeholder="e.g. patience and progress" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="switch">
+          <input id="tags" type="checkbox" checked />
+          <span>Include hashtags</span>
+        </label>
+        <label class="switch">
+          <input id="saveCsv" type="checkbox" />
+          <span>Save to CSV</span>
+        </label>
+      </div>
+
+      <div class="row">
+        <button id="btnOriginal" class="btn">New Original</button>
+        <button id="btnFamous" class="btn secondary">New Famous</button>
+        <button id="btnCopy" class="btn" title="Copy to clipboard">Copy</button>
+      </div>
+
+      <div id="out" class="quote">Your quote will appear here…</div>
+      <div class="row">
+        <span id="len" class="muted">Length: 0 / 280</span>
+      </div>
+
+      <footer class="muted">Tip: Keep it under 280 characters for X/Twitter.</footer>
+    </div>
+  </div>
+
+  <script>
+    const out = document.getElementById('out');
+    const len = document.getElementById('len');
+    const themeSelect = document.getElementById('themeSelect');
+    const themeInput = document.getElementById('themeInput');
+    const tags = document.getElementById('tags');
+    const saveCsv = document.getElementById('saveCsv');
+    const btnOriginal = document.getElementById('btnOriginal');
+    const btnFamous = document.getElementById('btnFamous');
+    const btnCopy = document.getElementById('btnCopy');
+
+    function setLoading(loading) {
+      btnOriginal.disabled = loading;
+      btnFamous.disabled = loading;
+    }
+
+    function updateLen() {
+      const n = (out.textContent || '').length;
+      len.textContent = `Length: ${n} / 280`;
+      len.classList.toggle('red', n > 280);
+    }
+
+    function currentTheme() {
+      return themeInput.value.trim() || themeSelect.value;
+    }
+
+    async function fetchQuote(kind) {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (kind === 'original') {
+          const t = currentTheme();
+          if (t) params.set('theme', t);
+          params.set('tags', String(tags.checked));
+        } else {
+          params.set('tags', String(tags.checked));
+        }
+
+        // If saving to CSV, we’ll call a new /quote/save endpoint
+        if (saveCsv.checked) params.set('save', 'true');
+
+        const url = kind === 'original'
+          ? `/quote/original?${params}`
+          : `/quote/famous?${params}`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        out.textContent = text;
+        updateLen();
+      } catch (err) {
+        out.textContent = `Error: ${err.message}`;
+        updateLen();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    btnOriginal.addEventListener('click', () => fetchQuote('original'));
+    btnFamous.addEventListener('click', () => fetchQuote('famous'));
+
+    btnCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(out.textContent || '');
+        btnCopy.textContent = 'Copied!';
+        setTimeout(() => (btnCopy.textContent = 'Copy'), 900);
+      } catch {
+        btnCopy.textContent = 'Copy failed';
+        setTimeout(() => (btnCopy.textContent = 'Copy'), 900);
+      }
+    });
+
+    updateLen();
+  </script>
+</body>
+</html>

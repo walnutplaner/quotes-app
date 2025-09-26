@@ -34,23 +34,23 @@ This project started as a way to practice my self-study in software development 
 
 ##  Project Structure
 
-      quotes-app/
+  quotes-app/ # Project Folder
       
-   app.py  # FastAPI server
+  app.py  # FastAPI server
 
-   quotes_app.py  # Quote generation + logic
+  quotes_app.py  # Quote generation + logic
 
-   famous_quotes.json  # Curated quotes
+  famous_quotes.json  # Curated quotes
+   
+  requirements.txt  # Dependencies
 
-   requirements.txt  # Dependencies
-
-   .env  # API key (not committed)
+  .env  # API key (not committed)
 
    static/
-   index.html # Front-end UI
+   index.html  # Front-end UI
 
-└─ data/
-  └─ out.csv # Generated log (auto-created)
+   data/
+   out.csv  # Generated log (auto-created)
 
 
 

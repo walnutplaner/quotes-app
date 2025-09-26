@@ -95,15 +95,22 @@ API: http://127.0.0.1:8000/quote/original
    
 This app can be deployed to free hosting platforms (like Render):
 
-    1-Push this repo to GitHub.
+   1-Push this repo to GitHub.
 
-    2-Connect Render to your repo.
+   2-Connect Render to your repo.
 
-    3-Add your OPENAI_API_KEY in Render’s environment variables.
+   3-Add your OPENAI_API_KEY in Render’s environment variables.
 
-    4-Deploy — and you’ll get a public URL like:
+   4-Deploy — and you’ll get a public URL like:
         https://quotes-api.onrender.com
 
+
+## Data Folder
+This project writes generated quotes to `data/out.csv` at runtime.
+
+- The `data/` folder is included in the repo (via a `.gitkeep` file).
+- CSV logs themselves are **ignored** by Git to keep the repo clean.
+- If you clone this repo, make sure a `data/` folder exists at the project root so the app can save logs.
 
 
 
